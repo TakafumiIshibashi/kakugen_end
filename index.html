@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>動く電子カレンダー</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script>
+        function clock() {
+            var myDay = new Array("日", "月", "火", "水", "木", "金", "土");
+            var now = new Date();
+            var year = now.getFullYear(); // 年
+            var month = now.getMonth() + 1; // 月
+            var date = now.getDate(); // 日
+            var day = now.getDay();
+            var hour = now.getHours(); // 時
+            var min = now.getMinutes(); // 分
+            var sec = now.getSeconds(); // 秒
+
+            //googleカレンダーを夜半過ぎに読み込むためリロードする
+            //通信ラッシュを避けて0時15分0秒から12秒間に繰り返しを避けるために15秒待ち時間の後リロードする
+            if (hour == 0 && min == 15 && sec <= 12) {
+                window.setTimeout("doReload()", 15000);
+            }
+
+            //午前午後がわかりにくい12時は、ひる、よると表示する
+            var ampm = "";
+            if (hour >= 13) {
+                ampm = '午後';
+            } else if (hour >= 12) {
+                ampm = 'ひる';
+            } else if (hour >= 1) {
+                ampm = '午前';
+            } else {
+                ampm = 'よる';
+            }
+
+            //24時間表示をわかりやすい12時間表示に変更
+            if (hour >= 13) { hour = hour - 12; }
+
+
+            // 数値が1桁の場合、頭に0を付けて2桁で表示する指定　ただし時間はそのまま　テレビの時刻表示とそろえた
+            //if(hour < 10) { hour = "0" + hour; }
+            if (min < 10) { min = "0" + min; }
+            if (sec < 10) { sec = "0" + sec; }
+
+
+            // フォーマット
+            var clock2 = month + '月' + date + '日' + '（' + myDay[day] + '）' + hour + '：' + min; //　　　　+ '分';// + sec + '秒';
+            var year1 = year + '';
+            var month1 = month;
+            var date1 = date;
+            var myDay1 = myDay[day];
+            var ampm1 = ampm;
+            //var date1 = month + '月' + date + '日' + '（' + myDay[day] + '）';
+            var time1 = ampm + hour + ':' + min;
+
+            //document . getElementById( 'clock-02' ) . innerHTML= clock2 . toLocaleString(); // div id="clock-02"
+            document.getElementById('year-01').innerHTML = year1.toLocaleString(); // div id="year-01"
+            document.getElementById('month-01').innerHTML = month1.toLocaleString(); // div id="month-01"
+            document.getElementById('myDay-01').innerHTML = myDay1.toLocaleString(); // div id="myDay-01"
+            document.getElementById('date-01').innerHTML = date1.toLocaleString(); // div id="date-01"
+            //document . getElementById( 'ampm-01' ) . innerHTML= ampm1 . toLocaleString(); // div id="ampm-01"
+            document.getElementById('time-01').innerHTML = time1.toLocaleString(); // div id="time-01"
+
+            // 10000ミリ秒（10秒）ごとに処理を実効　せわしい秒表示を中止し処理負担を軽減
+            window.setTimeout("clock()", 10000);
+        }
+
+        // リロード実行　true：webサーバーからのリロード
+        function doReload() {
+            window.location.reload(true);
+        }
+
+        window.onload = clock;
+    </script>
+</head>
+
+<body>
+    <!-- 調整用　Windowサイズ表示部分 
+<form name="winsize">
+ウィンドウサイズ：横幅 = <input name="sw" type="text" size="10"> / 高さ = <input name="sh" type="text" size="10">
+</form>
+-->
+    <script type="text/javascript">
+        //読み込み時の表示
+        window_load();
+
+        //ウィンドウサイズ変更時に更新
+        window.onresize = window_load;
+        //サイズの表示
+        function window_load() {
+            document.winsize.sw.value = window.innerWidth;
+            document.winsize.sh.value = window.innerHeight;
+        }
+
+    </script>
+
+    <div id="clock-02" ></div>
+    <div id="contents">
+        <div id="randomMove2">
+        <h1><div  id="year-01"></div></h1>
+        </div>
+
+        <div id="randomMove3">
+           <h2> <div id="date-01"></div></h2>
+        </div>
+        
+        <div id="randomMove4">
+        <h3><div id="month-01"></div></h3>
+        </div>
+
+        <div id="randomMove5">
+       <h4> <div id="myDay-01"></div></h4>
+        </div>
+
+        <div id="randomMove6">
+       <h5> <div id="time-01"></h5>
+        </div>
+        <div id="randomMove7">
+       <h1> 年</h1>
+        </div>
+        <div id="randomMove8">
+       <h2> 月</h2>
+        </div>
+        <div id="randomMove9">
+       <h3> 日</h3>
+        </div>
+        <div id="randomMove10">
+       <h4> 曜日</h4>
+        </div>
+        </div>
+        <div id="randomMove11">
+       <h3>🦟 </h3>
+        </div>
+        
+
+
+
+
+
+
+
+    </div>
+
+ 
+
+    <script>
+        function randomMove2(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove2("randomMove2");
+    </script>
+
+    <script>
+        function randomMove3(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove3("randomMove3");
+    </script>
+
+
+    <script>
+        function randomMove4(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove4("randomMove4");
+    </script>
+
+
+    <script>
+        function randomMove5(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove5("randomMove5");
+    </script>
+
+    <script>
+        function randomMove6(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove6("randomMove6");
+    </script>
+    <script>
+        function randomMove7(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove7("randomMove7");
+    </script>
+    <script>
+        function randomMove8(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove8("randomMove8");
+    </script>
+    <script>
+        function randomMove9(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove9("randomMove9");
+    </script>
+    <script>
+        function randomMove10(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove10("randomMove10");
+    </script>
+    <script>
+        function randomMove11(id) {
+                var randomElm = document.getElementById(id);
+
+                var randomTop = 50;
+                var randomLeft = 50;
+
+                randomElm.style.top = randomTop + "%";
+                randomElm.style.left = randomLeft + "%";
+
+                var timer = setInterval(function () {
+
+                    if (Math.random() * 2 < 1) {
+                        randomTop++;
+                    } else {
+                        randomTop--;
+                    };
+
+                    if (randomTop === 0) {
+                        randomTop = 2;
+                    }
+                    if (randomTop === 100) {
+                        randomTop = 98;
+                    }
+
+                    if (Math.random() * 2 < 1) {
+                        randomLeft++;
+                    } else {
+                        randomLeft--;
+                    };
+
+                    if (randomLeft === 0) {
+                        randomLeft = 2;
+                    }
+                    if (randomLeft === 100) {
+                        randomLeft = 98;
+                    }
+
+                    randomElm.style.left = randomLeft + "%";
+                    randomElm.style.top = randomTop + "%";
+                }, 100);
+            };
+
+            randomMove11("randomMove11");
+    </script>
+
+
+</body>
+
+</html>
